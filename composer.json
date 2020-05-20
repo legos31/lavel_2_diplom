@@ -3,5 +3,12 @@
         "aura/sqlquery": "^2.7",
         "league/plates": "^3.3"
         
+    },
+
+    "autoload": {
+        "psr-4": {
+            "App\\Controllers\\": "app/controllers"
+        }
+        
     }
 }

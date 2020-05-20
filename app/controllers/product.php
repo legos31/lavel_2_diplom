@@ -1,6 +1,16 @@
 <?php
-// Create new Plates instance
-$templates = new League\Plates\Engine('/path/to/templates');
+namespace App\Controllers;
 
-// Render a template
-echo $templates->render('profile', ['name' => 'Jonathan']);
+use League\Plates\Engine;
+
+class Product {
+
+   public function __construct ()
+   {
+      $templates = new Engine('../app/views/template');
+
+      // Render a template
+      echo $templates->render('product', ['name' => 'Product Number One']);
+   }
+
+}
