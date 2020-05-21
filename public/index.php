@@ -1,12 +1,7 @@
 <?php 
 require '../vendor/autoload.php';
+require '../app/init.php';
 
-$builder = new DI\ContainerBuilder();
-$builder->addDefinitions ([
-    Engine::class => function () {
-        return new Engine('../app/views');
-    }
-]);
 $containerDI = $builder->build();
 
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
