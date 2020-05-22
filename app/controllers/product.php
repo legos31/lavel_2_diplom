@@ -1,23 +1,23 @@
 <?php
 namespace App\Controllers;
-use App\QueryBuilder;
+use App\Model\Product as ProductData;
 use League\Plates\Engine;
 
 class Product {
    private $templates, $queryBuilder;
 
-   public function __construct (Engine $engine, QueryBuilder $queryBuilder)
+   public function __construct (Engine $engine, ProductData $db)
    {
      $this->templates = $engine;
-     $this->queryBuilder = $queryBuilder;
+     $this->db = $db;
    }
 
    public function index()
    {
+      $this->db->getAllFromTable('products');
+      $result = $this->db->getResults();
       // Render a template
-      $this->queryBuilder->getAllFromTable('products');
-      $result = $this->queryBuilder->getResults();
-      echo $this->templates->render('products', ['name' => 'Product Number One']);
+      echo $this->templates->render('products', ['results'=> $result]);
    }
 
 }

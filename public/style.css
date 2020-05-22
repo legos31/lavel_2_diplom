@@ -1,0 +1,8 @@
+.card {
+   float: left;
+   margin: 30px;
+}
+
+.img {
+   max-width: 200px;
+}

@@ -1,13 +1,22 @@
 <?php
 namespace App\model;
-private $db;
-private $results;
+use Aura\SqlQuery\QueryFactory;
+use PDO;
 
 class Product {
 
-    public function __constructor(QueryBuilder $queryBuilder)
+    private static $queryFactory, $pdo;
+    private $results;  
+
+    public function __construct(QueryFactory $queryFactory, PDO $pdo)
     {
-        # code...
+        self::$queryFactory = $queryFactory;
+        self::$pdo = $pdo;
+    }
+
+    public function getResults()
+    {
+        return $this->results;
     }
 
     public function getOne()
@@ -15,8 +24,15 @@ class Product {
         # code...
     }
 
-    public function getAll()
+    public function getAllFromTable($table)
     {
-        # code...
+        $select = self::$queryFactory->newSelect();
+        $select
+            ->cols (['*'])
+            ->from($table);
+
+        $sth = self::$pdo->prepare($select->getStatement());
+        $sth->execute();
+        $this->results = $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 }
