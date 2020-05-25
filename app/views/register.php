@@ -1,6 +1,6 @@
 <?php $this->layout('layout', ['title' => 'login', 'category' => $category, 'auth'=>$auth]);
 echo $errors->display('error');
-echo $errors->display('success');
+//echo $errors->display('success');
 ?>
 
 <form action="" method="POST">

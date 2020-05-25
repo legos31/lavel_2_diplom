@@ -42,8 +42,41 @@ class Product {
          $this->db->getById('products', $id);
          $result = $this->db->getResults();
          // Render a template
-         echo $this->templates->render('product', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+         echo $this->templates->render('product_view', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
       }
+   }
+
+   public function editProduct($id)
+   {
+      if (!empty($_POST)) {
+         if(!$id == null) {
+            $this->db->updateTableById('products', $id, $_POST);
+            d($_POST);
+         }
+      }   
+      if ($id == null) {
+         $this->index();
+      }else {
+         $this->db->getById('products', $id);
+         $result = $this->db->getResults();
+         // Render a template
+         echo $this->templates->render('product_edit', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+      }
+   }
+
+   public function deleteProductbyId($id)
+   {
+      if ($id == null) {
+         $this->index();
+      } else {
+         $this->db->deleteById('products', $id);
+
+      }
+   }
+
+   public function insertProduct()
+   {
+      echo $this->templates->render('product_insert', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
    }
 
 }

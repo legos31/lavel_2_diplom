@@ -18,7 +18,12 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/category/{id:\d+}', ['\App\Controllers\Product','byCategory']);
     // The /{title} suffix is optional
     $r->addRoute('GET', '/articles/{id:\d+}[/{title}]', 'get_article_handler');
+    
     $r->addRoute('GET', '/product/{id:\d+}', ['\App\Controllers\Product','viewProduct']);
+    $r->addRoute('GET', '/product/edit/{id:\d+}', ['\App\Controllers\Product','editProduct']);
+    $r->addRoute('POST', '/product/edit/{id:\d+}', ['\App\Controllers\Product','editProduct']);
+    $r->addRoute('POST', '/product/delete/{id:\d+}', ['\App\Controllers\Product','deleteProductbyId']);
+    $r->addRoute('GET', '/insert', ['\App\Controllers\Product','insertProduct']);
     
 });
 

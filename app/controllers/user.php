@@ -52,7 +52,7 @@ class user {
 
    public function register()
    {  
-      
+      if (!empty($_POST)) {
          try {
             $userId = $this->auth->register($_POST['email'], $_POST['password'], $_POST['username'], function ($selector, $token)  {
               // echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
@@ -92,8 +92,9 @@ class user {
         catch (\Delight\Auth\TooManyRequestsException $e) {
             //die('Too many requests');
         }
+      }  
          
-      echo $this->templates->render('register', ['category'=>$this->db->getCategory(), 'errors'=>$this->flash]);
+      echo $this->templates->render('register', ['category'=>$this->db->getCategory(), 'errors'=>$this->flash, 'auth'=>$this->auth]);
      
    }
 }

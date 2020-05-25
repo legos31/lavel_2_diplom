@@ -81,4 +81,35 @@ class Product {
         $sth->execute($select->getBindValues());
         $this->results = $sth->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function updateTableById($table, $id, $params)
+    {
+        $update = self::$queryFactory->newUpdate();
+
+        $update
+            ->table($table)                  // update this table
+            ->cols($params)
+            ->where('id = :id')           // AND WHERE these conditions
+            ->bindValue('id', $id);   // bind one value to a placeholder
+
+        $sth = self::$pdo->prepare($update->getStatement());
+
+        // execute with bound values
+        $sth->execute($update->getBindValues());    
+    }
+
+    public function deletById($table, $id)
+    {
+        $delete = self::$queryFactory->newDelete();
+
+        $delete
+            ->from($table)                   // FROM this table
+            ->where('id = :id')           // AND WHERE these conditions
+            ->bindValue('id', $id);   // bind one value to a placeholder
+        // prepare the statement
+        $sth = self::$pdo->prepare($delete->getStatement());
+
+        // execute with bound values
+        $sth->execute($delete->getBindValues());        
+    }
 }
