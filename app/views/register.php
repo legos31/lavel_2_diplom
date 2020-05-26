@@ -1,6 +1,5 @@
 <?php $this->layout('layout', ['title' => 'login', 'category' => $category, 'auth'=>$auth]);
-echo $errors->display('error');
-//echo $errors->display('success');
+echo $errors->display();
 ?>
 
 <form action="" method="POST">
@@ -15,7 +14,7 @@ echo $errors->display('error');
   </div>
   <div class="form-group">
     <label for="exampleInputPassword1">Comfirm password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1">
+    <input type="password" class="form-control" id="exampleInputPassword1" name="comfirmpassword">
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>

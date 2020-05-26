@@ -1,7 +1,7 @@
 <?php $this->layout('layout', ['title' => $results[0]['name'], 'category' => $category, 'auth'=>$auth]) ?>
 <h4>Описание продукта</h4>
-
-<form action="" method="POST">
+<? echo $errors->display(); ?>
+<form action="" method="POST" enctype='multipart/form-data'>
   <div class="form-group">
 
 
@@ -18,26 +18,34 @@
       <input type="text" class="form-control" id="formGroupExampleInput2" name="text" value="<?=$results[0]['text']?>">
     </div>
 
+    <div class="card" style="width: 18rem;">
+      <img class="card-img-top" src="http://lavel2/<?=$results[0]['img']?>" alt="Card image cap">
+      <div class="card-body">
+        <p class="card-text">Cart product</p>
+      </div>
+    </div>
     <div class="input-group">
       <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
-        </div>
         <div class="custom-file">
-          <input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01" name="img" value="<?=$results[0]['img']?>">
-          <label class="custom-file-label" for="inputGroupFile01">Выберете файл</label>
+          <input type="file" name="img">
         </div>
       </div>
     </div>
 
     <div class="form-group">
       <label for="formGroupExampleInput2">Category</label>
+      <select id="inputState" class="form-control" name="category">
+       
+      
       <? foreach($category as $item) {
-        if ($item['id'] == $results[0]['category']) {
-          $name = $item['name'];
-        }
-      } ?>
-      <input type="text" class="form-control" id="formGroupExampleInput2" name="category" value="<?=$name?>" disabled>
+        if ($item['id'] == $results[0]['category']) {?>
+          <option selected><?= $item['name'] ?></option> 
+        <?} else {?>
+          <option><?= $item['name'] ?></option>
+      <?} ?>
+        <? }?>
+      </select>
+      
     </div>
 
     <div class="form-group">

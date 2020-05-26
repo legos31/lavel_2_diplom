@@ -3,23 +3,32 @@ namespace App\Controllers;
 use App\Model\Product as ProductData;
 use League\Plates\Engine;
 use Delight\Auth\Auth;
+use \Tamtamchik\SimpleFlash\Flash;
 
 class Product {
    private $templates, $queryBuilder, $auth;
 
-   public function __construct (Engine $engine, ProductData $db, Auth $auth)
+   public function __construct (Engine $engine, ProductData $db, Auth $auth, Flash $flash)
    {
      $this->templates = $engine;
      $this->db = $db;
      $this->auth = $auth;
+     $this->flash = $flash;
    }
 
    public function index()
    {
-      $this->db->getAllFromTable('products');
-      $result = $this->db->getResults();
-      // Render a template
-      echo $this->templates->render('products', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+      if ($this->auth->isLoggedIn()) {
+         $this->db->getAllFromTable('products', false);
+         $result = $this->db->getResults();
+         // Render a template
+         echo $this->templates->render('products', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+      } else {
+         $this->db->getAllFromTable('products', true);
+         $result = $this->db->getResults();
+         // Render a template
+         echo $this->templates->render('products', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+      }
    }
 
    public function byCategory($id = null)
@@ -48,10 +57,43 @@ class Product {
 
    public function editProduct($id)
    {
+      $this->db->getById('products', $id);
+      $result = $this->db->getResults();
+      $oldImgPath = $result['0']['img'];
+      d($result);
+      d($oldImgPath);
       if (!empty($_POST)) {
          if(!$id == null) {
-            $this->db->updateTableById('products', $id, $_POST);
-            d($_POST);
+            $pathForDB = 'uploads/'.$_FILES['img']['name'];
+            $params = $_POST;
+            $path = $_SERVER['DOCUMENT_ROOT'].'/uploads/';
+            if (!move_uploaded_file($_FILES['img']['tmp_name'], $path . $_FILES['img']['name'])) {
+               switch ($_FILES['img']['error']) {
+                  case 1:
+                     $this->flash->error('Размер файла превышает ограничения');   
+                     $pathForDB = $oldImgPath; 
+                  break;
+                  case 2:
+                     $this->flash->error('Размер файла превышает ограничения');     
+                     $pathForDB = $oldImgPath; 
+                  break;
+                  case 3:
+                     $this->flash->error('Файл был загружен не полностью');       
+                     $pathForDB = $oldImgPath; 
+                  break;
+                  case 4:
+                     $this->flash->error('Файл не был загружен'); 
+                     $pathForDB = $oldImgPath;     
+                  break;
+               }     
+            }
+
+            $this->db->findCategoryByName($_POST['category']);
+            $category =$this->db->getCategory();
+            $params['category'] = $category['id'];
+            $params['img'] = $pathForDB;
+            $this->db->updateTableById('products', $id, $params);
+            $this->flash->success('Success edit');
          }
       }   
       if ($id == null) {
@@ -59,8 +101,9 @@ class Product {
       }else {
          $this->db->getById('products', $id);
          $result = $this->db->getResults();
+         $this->db->category();
          // Render a template
-         echo $this->templates->render('product_edit', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+         echo $this->templates->render('product_edit', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth, 'errors'=>$this->flash]);
       }
    }
 
@@ -70,13 +113,20 @@ class Product {
          $this->index();
       } else {
          $this->db->deleteById('products', $id);
-
+         $this->index();
       }
    }
 
    public function insertProduct()
    {
-      echo $this->templates->render('product_insert', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+      if (!empty($_POST)) {
+         $this->db->insert('products', $_POST);
+         header('Location: http://lavel2/');
+      } else {
+         echo $this->templates->render('product_insert', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+
+      }
+
    }
 
 }

@@ -53,26 +53,30 @@ class user {
    public function register()
    {  
       if (!empty($_POST)) {
-         try {
-            $userId = $this->auth->register($_POST['email'], $_POST['password'], $_POST['username'], function ($selector, $token)  {
-              // echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
-              $this->selector = $selector;
-              $this->token = $token;
-            });
-            $this->flash->success('Success registration');
-            //echo 'We have signed up a new user with the ID ' . $userId;
-         }
-         catch (\Delight\auth\InvalidEmailException $e) {
-            $this->flash->error('Invalid email address');
-         }
-         catch (\Delight\auth\InvalidPasswordException $e) {
-            $this->flash->error('Invalid password');
-         }
-         catch (\Delight\auth\UserAlreadyExistsException $e) {
-            $this->flash->error('User already exists');
-         }
-         catch (\Delight\auth\TooManyRequestsException $e) {
-            $this->flash->error('Too many requests');
+         if($_POST['comfirmpassword'] <> $_POST['password']) {
+            $this->flash->error('Password mismatch');
+         } else {
+            try {
+               $userId = $this->auth->register($_POST['email'], $_POST['password'], $_POST['username'], function ($selector, $token)  {
+               // echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
+               $this->selector = $selector;
+               $this->token = $token;
+               });
+               $this->flash->success('Success registration');
+               //echo 'We have signed up a new user with the ID ' . $userId;
+            }
+            catch (\Delight\auth\InvalidEmailException $e) {
+               $this->flash->error('Invalid email address');
+            }
+            catch (\Delight\auth\InvalidPasswordException $e) {
+               $this->flash->error('Invalid password');
+            }
+            catch (\Delight\auth\UserAlreadyExistsException $e) {
+               $this->flash->error('User already exists');
+            }
+            catch (\Delight\auth\TooManyRequestsException $e) {
+               $this->flash->error('Too many requests');
+            }
          }
 
          try {

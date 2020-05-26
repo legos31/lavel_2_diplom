@@ -1,18 +1,22 @@
 <?php
 namespace App\model;
 use Aura\SqlQuery\QueryFactory;
+use Exception;
 use PDO;
+use \Tamtamchik\SimpleFlash\Flash;
 
 class Product {
 
     private static $queryFactory, $pdo;
     private $results;
     private $category;
+    private $flash;
 
-    public function __construct(QueryFactory $queryFactory, PDO $pdo)
+    public function __construct(QueryFactory $queryFactory, PDO $pdo, Flash $flash)
     {
         self::$queryFactory = $queryFactory;
         self::$pdo = $pdo;
+        $this->flash = $flash;
 
         //get category
         $this->category();
@@ -21,14 +25,36 @@ class Product {
 
     public function category()
     {
-        $select = self::$queryFactory->newSelect();
-        $select
-            ->cols (['*'])
-            ->from('category');
+        try {
+            $select = self::$queryFactory->newSelect();
+            $select
+                ->cols (['*'])
+                ->from('category');
 
-        $sth = self::$pdo->prepare($select->getStatement());
-        $sth->execute();
-        $this->category = $sth->fetchAll(PDO::FETCH_ASSOC);     
+            $sth = self::$pdo->prepare($select->getStatement());
+            $sth->execute();
+            $this->category = $sth->fetchAll(PDO::FETCH_ASSOC);     
+        } catch (Exception $exception) {
+            $this->flash->error($exception->getMessage('Execution error SELECT function product->category'));
+        }
+    }
+
+    public function findCategoryByName($name)
+    {
+        try {
+            $select = self::$queryFactory->newSelect();
+            $select
+                ->cols (['*'])
+                ->from('category')
+                ->where('name = :name')
+                ->bindValue('name', $name) ;
+
+            $sth = self::$pdo->prepare($select->getStatement());
+            $sth->execute($select->getBindValues());
+            $this->category = $sth->fetch(PDO::FETCH_ASSOC);     
+        } catch (Exception $exception) {
+            $this->flash->error($exception->getMessage('Execution error SELECT function product->findCategoryByName'));
+        }
     }
 
     public function getResults()
@@ -49,22 +75,30 @@ class Product {
             ->cols (['*'])
             ->from($table)
             ->where('id = :id')
-            ->bindValue('id', $id) ;
+            ->bindValue('id', $id);
 
         $sth = self::$pdo->prepare($select->getStatement());
         $sth->execute($select->getBindValues());
         $this->results = $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllFromTable($table)
+    public function getAllFromTable($table, $status)
     {
         $select = self::$queryFactory->newSelect();
-        $select
-            ->cols (['*'])
-            ->from($table);
+        if($status) {
+            $select
+                ->cols (['*'])
+                ->from($table)
+                ->where('status = :status')
+                ->bindValue('status', $status) ;
+        } else {
+            $select
+                ->cols (['*'])
+                ->from($table);
+        }   
 
         $sth = self::$pdo->prepare($select->getStatement());
-        $sth->execute();
+        $sth->execute($select->getBindValues());
         $this->results = $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -98,7 +132,7 @@ class Product {
         $sth->execute($update->getBindValues());    
     }
 
-    public function deletById($table, $id)
+    public function deleteById($table, $id)
     {
         $delete = self::$queryFactory->newDelete();
 
@@ -111,5 +145,26 @@ class Product {
 
         // execute with bound values
         $sth->execute($delete->getBindValues());        
+    }
+
+    public function insert($table, $params)
+    {
+        if($params['status'] == 'on') {
+            $params['status'] = '0';
+        } else {
+            $params['status'] = '1';
+        }
+
+        $insert = self::$queryFactory->newInsert();
+
+        $insert
+            ->into($table)                   // INTO this table
+            ->cols($params);
+
+         $sth = self::$pdo->prepare($insert->getStatement());
+
+        // execute with bound values
+        $sth->execute($insert->getBindValues());
+
     }
 }
