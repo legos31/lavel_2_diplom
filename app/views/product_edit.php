@@ -1,6 +1,7 @@
 <?php $this->layout('layout', ['title' => $results[0]['name'], 'category' => $category, 'auth'=>$auth]) ?>
 <h4>Описание продукта</h4>
-<? echo $errors->display(); ?>
+<? echo $errors->display(); 
+d($_POST);?>
 <form action="" method="POST" enctype='multipart/form-data'>
   <div class="form-group">
 
@@ -50,7 +51,7 @@
 
     <div class="form-group">
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="gridCheck">
+        <input class="form-check-input" type="checkbox" id="gridCheck" name="status" <? if ($results['0']['status']=='0') echo "checked"?>>
         <label class="form-check-label" for="gridCheck">
           Hide
         </label>

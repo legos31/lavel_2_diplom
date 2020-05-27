@@ -60,8 +60,6 @@ class Product {
       $this->db->getById('products', $id);
       $result = $this->db->getResults();
       $oldImgPath = $result['0']['img'];
-      d($result);
-      d($oldImgPath);
       if (!empty($_POST)) {
          if(!$id == null) {
             $pathForDB = 'uploads/'.$_FILES['img']['name'];
@@ -92,8 +90,14 @@ class Product {
             $category =$this->db->getCategory();
             $params['category'] = $category['id'];
             $params['img'] = $pathForDB;
+            if ($_POST['status']) {
+               $params['status'] = 0;
+            } else {
+               $params['status'] = 1;
+            }
             $this->db->updateTableById('products', $id, $params);
             $this->flash->success('Success edit');
+            
          }
       }   
       if ($id == null) {
@@ -103,6 +107,7 @@ class Product {
          $result = $this->db->getResults();
          $this->db->category();
          // Render a template
+         
          echo $this->templates->render('product_edit', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth, 'errors'=>$this->flash]);
       }
    }
