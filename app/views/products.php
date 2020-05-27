@@ -1,6 +1,8 @@
 <?php $this->layout('layout', ['title' => 'Каталог продуктов', 'category' => $category, 'auth'=>$auth]) ?>
 <h3>Каталог продуктов</h3>
-<div><a href="/insert" class="btn btn-success">New product</a></div>
+<? if ($auth->isLoggedIn()):?>
+  <div><a href="/insert" class="btn btn-success">New product</a></div>
+<?endif?>
 <? foreach($results as $result):?>
   <div class="card" style="width: 18rem;">
   <div class="card-header">

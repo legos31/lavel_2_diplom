@@ -1,7 +1,6 @@
 <?php $this->layout('layout', ['title' => $results[0]['name'], 'category' => $category, 'auth'=>$auth]) ?>
-<h4>Описание продукта</h4>
-<? echo $errors->display(); 
-d($_POST);?>
+<h4>Редактирование продукта</h4>
+<? echo $errors->display(); ?>
 <form action="" method="POST" enctype='multipart/form-data'>
   <div class="form-group">
 
@@ -36,17 +35,14 @@ d($_POST);?>
     <div class="form-group">
       <label for="formGroupExampleInput2">Category</label>
       <select id="inputState" class="form-control" name="category">
-       
-      
-      <? foreach($category as $item) {
-        if ($item['id'] == $results[0]['category']) {?>
-          <option selected><?= $item['name'] ?></option> 
-        <?} else {?>
-          <option><?= $item['name'] ?></option>
-      <?} ?>
-        <? }?>
+        <? foreach($category as $item) {
+          if ($item['id'] == $results[0]['category']) {?>
+            <option selected><?= $item['name'] ?></option> 
+          <?} else {?>
+            <option><?= $item['name'] ?></option>
+        <?} ?>
+          <? }?>
       </select>
-      
     </div>
 
     <div class="form-group">

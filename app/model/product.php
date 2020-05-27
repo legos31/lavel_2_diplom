@@ -67,7 +67,25 @@ class Product {
         return $this->category;
     }
 
-
+    public function getByIdWithReviews($table, $id)
+    {
+        $select = self::$queryFactory->newSelect();
+        $select
+            ->cols (['*'])
+            ->from('products AS p')
+            ->join(
+                'LEFT',             // the join-type
+                'reviews AS r',        // join to this table ...
+                'p.id = r.product_id' // ... ON these conditions
+            )
+            ->where('id = :id')
+            ->bindValue('id', $id);
+            
+           
+        $sth = self::$pdo->prepare($select->getStatement());
+        $sth->execute($select->getBindValues());
+        $this->results = $sth->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function getById($table, $id)
     {
         $select = self::$queryFactory->newSelect();
@@ -149,10 +167,12 @@ class Product {
 
     public function insert($table, $params)
     {
-        if($params['status'] == 'on') {
-            $params['status'] = '0';
-        } else {
-            $params['status'] = '1';
+        if($params['status']) {
+            if($params['status'] == 'on') {
+                $params['status'] = '0';
+            } else {
+                $params['status'] = '1';
+            }
         }
 
         $insert = self::$queryFactory->newInsert();

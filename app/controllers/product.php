@@ -48,7 +48,12 @@ class Product {
       if ($id == null) {
          $this->index();
       }else {
-         $this->db->getById('products', $id);
+         if (!empty($_POST)) {
+            $otzyv = $_POST['otzyv'];
+            $autorId = $this->auth->getUserId();
+            $this->db->insert('reviews', ['text' => $otzyv, 'user_id' => $autorId, 'product_id' => $id]);
+         }
+         $this->db->getByIdWithReviews('products', $id);
          $result = $this->db->getResults();
          // Render a template
          echo $this->templates->render('product_view', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
@@ -68,20 +73,16 @@ class Product {
             if (!move_uploaded_file($_FILES['img']['tmp_name'], $path . $_FILES['img']['name'])) {
                switch ($_FILES['img']['error']) {
                   case 1:
-                     $this->flash->error('Размер файла превышает ограничения');   
-                     $pathForDB = $oldImgPath; 
+                     $this->flash->error('Размер файла превышает ограничения');    
                   break;
                   case 2:
-                     $this->flash->error('Размер файла превышает ограничения');     
-                     $pathForDB = $oldImgPath; 
+                     $this->flash->error('Размер файла превышает ограничения');      
                   break;
                   case 3:
-                     $this->flash->error('Файл был загружен не полностью');       
-                     $pathForDB = $oldImgPath; 
+                     $this->flash->error('Файл был загружен не полностью');        
                   break;
                   case 4:
-                     $this->flash->error('Файл не был загружен'); 
-                     $pathForDB = $oldImgPath;     
+                     $this->flash->error('Файл не был загружен');      
                   break;
                }     
             }
@@ -125,10 +126,40 @@ class Product {
    public function insertProduct()
    {
       if (!empty($_POST)) {
-         $this->db->insert('products', $_POST);
+         $pathForDB = 'uploads/'.$_FILES['img']['name'];
+         $params = $_POST;
+         $path = $_SERVER['DOCUMENT_ROOT'].'/uploads/';
+         if (!move_uploaded_file($_FILES['img']['tmp_name'], $path . $_FILES['img']['name'])) {
+            switch ($_FILES['img']['error']) {
+               case 1:
+                  $this->flash->error('Размер файла превышает ограничения');   
+               break;
+               case 2:
+                  $this->flash->error('Размер файла превышает ограничения');     
+               break;
+               case 3:
+                  $this->flash->error('Файл был загружен не полностью');        
+               break;
+               case 4:
+                  $this->flash->error('Файл не был загружен');      
+               break;
+            }
+         }
+         
+         $this->db->findCategoryByName($_POST['category']);
+         $category =$this->db->getCategory();
+         $params['category'] = $category['id'];
+         $params['img'] = $pathForDB;
+         if ($_POST['status']) {
+            $params['status'] = 0;
+         } else {
+            $params['status'] = 1;
+         }
+         $params['user_id'] = $this->auth->getUserId();
+         $this->db->insert('products', $params);
          header('Location: http://lavel2/');
       } else {
-         echo $this->templates->render('product_insert', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+         echo $this->templates->render('product_insert', ['category'=>$this->db->getCategory(), 'auth'=>$this->auth, 'errors'=>$this->flash]);
 
       }
 

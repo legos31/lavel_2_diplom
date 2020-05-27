@@ -1,7 +1,6 @@
 <?php $this->layout('layout', ['title' => $results[0]['name'], 'category' => $category, 'auth'=>$auth]) ?>
 <h4>Новый продукт</h4>
-
-<form action="" method="POST">
+<form action="" method="POST" enctype='multipart/form-data'>
   <div class="form-group">
 
 
@@ -20,24 +19,28 @@
 
     <div class="input-group">
       <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
-        </div>
         <div class="custom-file">
-          <input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01" name="img" value="">
-          <label class="custom-file-label" for="inputGroupFile01">Выберете файл</label>
+          <input type="file" name="img">
         </div>
       </div>
     </div>
 
     <div class="form-group">
       <label for="formGroupExampleInput2">Category</label>
-      <input type="text" class="form-control" id="formGroupExampleInput2" name="category" value="">
+      <select id="inputState" class="form-control" name="category">
+        <? foreach($category as $item) {
+          if ($item['id'] == $results[0]['category']) {?>
+            <option selected><?= $item['name'] ?></option> 
+          <?} else {?>
+            <option><?= $item['name'] ?></option>
+        <?} ?>
+          <? }?>
+      </select>
     </div>
 
     <div class="form-group">
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="gridCheck" name="status">
+        <input class="form-check-input" type="checkbox" id="gridCheck" name="status" <? if ($results['0']['status']=='0') echo "checked"?>>
         <label class="form-check-label" for="gridCheck">
           Hide
         </label>

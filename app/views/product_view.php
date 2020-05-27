@@ -1,12 +1,9 @@
 <?php $this->layout('layout', ['title' => $results[0]['name'], 'category' => $category, 'auth'=>$auth]) ?>
 <h4>Описание продукта</h4>
-<?d($results)?>
-<?d($category)?>
+<? d($results)?>
 <form>
   <div class="form-group">
-
-
-  <div class="form-group">
+    <div class="form-group">
       <label for="formGroupExampleInput">Name</label>
       <input type="text" class="form-control" id="formGroupExampleInput" name="name" value="<?=$results[0]['name']?>" disabled>
     </div>
@@ -49,7 +46,22 @@
         </label>
       </div>
     </div>
-
   </div>
-
 </form>
+
+<h3>Отзывы</h3>
+<div>
+  <p>Отзыв номер один</p>
+</div>
+
+<? if($auth->isLoggedIn()):?>
+  <form action="" method="POST">
+    <div class="form-group">
+      <div class="form-group">
+        <label for="formGroupExampleInput">Отправить свой отзыв</label>
+        <input type="text" class="form-control" id="formGroupExampleInput" name="otzyv" value="">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+<?endif?>
