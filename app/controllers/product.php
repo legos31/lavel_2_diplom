@@ -4,16 +4,18 @@ use App\Model\Product as ProductData;
 use League\Plates\Engine;
 use Delight\Auth\Auth;
 use \Tamtamchik\SimpleFlash\Flash;
+Use App\Model\User;
 
 class Product {
-   private $templates, $queryBuilder, $auth;
+   private $templates, $queryBuilder, $auth, $user;
 
-   public function __construct (Engine $engine, ProductData $db, Auth $auth, Flash $flash)
+   public function __construct (Engine $engine, ProductData $db, Auth $auth, Flash $flash, User $user)
    {
      $this->templates = $engine;
      $this->db = $db;
      $this->auth = $auth;
      $this->flash = $flash;
+     $this->user = $user;
    }
 
    public function index()
@@ -34,7 +36,7 @@ class Product {
    public function byCategory($id = null)
    {
       if ($id == null) {
-         $this->index();
+         header('Location: http://lavel2/');
       }else {
          $this->db->getAllFromTableByCategory('products', $id);
          $result = $this->db->getResults();
@@ -46,17 +48,17 @@ class Product {
    public function viewProduct($id)
    {
       if ($id == null) {
-         $this->index();
+         header('Location: http://lavel2/');
       }else {
          if (!empty($_POST)) {
             $otzyv = $_POST['otzyv'];
             $autorId = $this->auth->getUserId();
-            $this->db->insert('reviews', ['text' => $otzyv, 'user_id' => $autorId, 'product_id' => $id]);
+            $this->db->insert('reviews', ['text_rev' => $otzyv, 'user_id' => $autorId, 'product_id' => $id]);
+            $this->flash->success('Отзыв записан');
          }
          $this->db->getByIdWithReviews('products', $id);
          $result = $this->db->getResults();
-         // Render a template
-         echo $this->templates->render('product_view', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth]);
+         echo $this->templates->render('product_view', ['results'=> $result, 'category'=>$this->db->getCategory(), 'auth'=>$this->auth, 'errors' => $this->flash]);
       }
    }
 
@@ -102,7 +104,7 @@ class Product {
          }
       }   
       if ($id == null) {
-         $this->index();
+         header('Location: http://lavel2/');
       }else {
          $this->db->getById('products', $id);
          $result = $this->db->getResults();
@@ -116,10 +118,10 @@ class Product {
    public function deleteProductbyId($id)
    {
       if ($id == null) {
-         $this->index();
+         header('Location: http://lavel2/');
       } else {
          $this->db->deleteById('products', $id);
-         $this->index();
+         header('Location: http://lavel2/');
       }
    }
 

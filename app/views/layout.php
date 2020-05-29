@@ -22,11 +22,21 @@
          <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                <li class="nav-item active">
-               <?if (!$auth->isLoggedIn()) {?>   
-                  <a class="nav-link" href="/login">LogIn <span class="sr-only">(current)</span></a>
-               <?} else {?>   
-                  <a class="nav-link" href="/logout">LogOut <span class="sr-only">(current)</span></a>
-               <? }?>   
+                  <?if (!$auth->isLoggedIn()) {?>   
+                     <a class="nav-link" href="/login">LogIn <span class="sr-only">(current)</span></a>
+                  <?} else {?>   
+                     <a class="nav-link" href="/logout">LogOut <span class="sr-only" onclick="return confirm('Уверены?')">(current)</span></a>
+                  <? }?>   
+               </li>
+               <li class="cnav-item active">
+                  <?if (!$auth->isLoggedIn()) {?>   
+                     <a class="nav-link" href="/register">Register <span class="sr-only">(current)</span></a>
+                  <?} ?>   
+               </li>
+               <li class="cnav-item active">
+                  <?if ($auth->isLoggedIn()) {?>   
+                     <a class="nav-link" href="/users">Users <span class="sr-only">(current)</span></a>
+                  <?} ?>   
                </li>
                <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -78,10 +78,15 @@ class Product {
                 'reviews AS r',        // join to this table ...
                 'p.id = r.product_id' // ... ON these conditions
             )
-            ->where('id = :id')
+            ->join(
+                'LEFT',             // the join-type
+                'users AS u',        // join to this table ...
+                'u.id = r.user_id' // ... ON these conditions
+            )
+            ->where('p.id = :id')
             ->bindValue('id', $id);
             
-           
+        
         $sth = self::$pdo->prepare($select->getStatement());
         $sth->execute($select->getBindValues());
         $this->results = $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -152,17 +157,30 @@ class Product {
 
     public function deleteById($table, $id)
     {
+        $this->getById($table, $id);
+        $file = $this->results['0']['img'];
+        unlink($file);
+
         $delete = self::$queryFactory->newDelete();
-
         $delete
-            ->from($table)                   // FROM this table
-            ->where('id = :id')           // AND WHERE these conditions
-            ->bindValue('id', $id);   // bind one value to a placeholder
-        // prepare the statement
-        $sth = self::$pdo->prepare($delete->getStatement());
+            ->from('products')
+            ->where('id= :id')               
+            ->bindValue('id', $id) ;
 
+        $sth = self::$pdo->prepare($delete->getStatement());
         // execute with bound values
-        $sth->execute($delete->getBindValues());        
+        $sth->execute($delete->getBindValues()); 
+
+        $delete = self::$queryFactory->newDelete();
+        $delete
+            ->from('reviews')
+            ->where('product_id = :id')               
+            ->bindValue('id', $id) ;
+
+        $sth = self::$pdo->prepare($delete->getStatement());
+        // execute with bound values
+        $sth->execute($delete->getBindValues()); 
+         
     }
 
     public function insert($table, $params)
@@ -182,9 +200,12 @@ class Product {
             ->cols($params);
 
          $sth = self::$pdo->prepare($insert->getStatement());
-
+            
         // execute with bound values
         $sth->execute($insert->getBindValues());
+        if (!empty($sth->errorInfo())){
+            $this->flash->error($sth->errorInfo()['2']);
+        }
 
     }
 }

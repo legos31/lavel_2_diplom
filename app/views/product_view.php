@@ -1,6 +1,7 @@
 <?php $this->layout('layout', ['title' => $results[0]['name'], 'category' => $category, 'auth'=>$auth]) ?>
 <h4>Описание продукта</h4>
-<? d($results)?>
+<? echo $errors->display(); ?>
+<?d($results) ?>
 <form>
   <div class="form-group">
     <div class="form-group">
@@ -35,7 +36,7 @@
           $name = $item['name'];
         }
       } ?>
-      <input type="text" class="form-control" id="formGroupExampleInput2" name="text" value="<?=$name?>" disabled>
+      <input type="text" class="form-control" id="formGroupExampleInput2" name="text_rev" value="<?=$name?>" disabled>
     </div>
 
     <div class="form-group">
@@ -50,9 +51,17 @@
 </form>
 
 <h3>Отзывы</h3>
-<div>
-  <p>Отзыв номер один</p>
-</div>
+<?foreach ($results as $result):?>
+  <div>
+  <p>Автор: <?=$result['username']?></p>
+    <p><?=$result['text_rev']?></p>
+    <?if ($auth->getUserId() == $result['user_id']):?>
+      <p><a href="/reviews/<?=$result['id_rev']?>" class="btn btn-info" role="button">Edit</a>
+      <a href="/reviews/delete/<?=$result['id_rev']?>" class="btn btn-info" role="button" onclick="return confirm('таки да?')">Delete</a></p>
+    <?endif?> 
+  </div>
+  <?endforeach?>
+
 
 <? if($auth->isLoggedIn()):?>
   <form action="" method="POST">

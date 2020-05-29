@@ -7,6 +7,8 @@ $containerDI = $builder->build();
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/', ['\App\Controllers\Product', 'index']);
     
+    $r->addRoute('GET', '/users', ['\App\Controllers\user','index']);
+    $r->addRoute('GET', '/users/delete/{id:\d+}', ['\App\Controllers\user','delete']);
     $r->addRoute('GET', '/login', ['\App\Controllers\user','login']);
     $r->addRoute('POST', '/login', ['\App\Controllers\user','login']);
     
@@ -27,6 +29,10 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/product/delete/{id:\d+}', ['\App\Controllers\Product','deleteProductbyId']);
     $r->addRoute('GET', '/insert', ['\App\Controllers\Product','insertProduct']);
     $r->addRoute('POST', '/insert', ['\App\Controllers\Product','insertProduct']);
+
+    $r->addRoute('GET', '/reviews/{id:\d+}', ['\App\Controllers\Reviews','EditReviews']);
+    $r->addRoute('POST', '/reviews/{id:\d+}', ['\App\Controllers\Reviews','EditReviews']);
+    $r->addRoute('GET', '/reviews/delete/{id:\d+}', ['\App\Controllers\Reviews','Delete']);
     
 });
 
